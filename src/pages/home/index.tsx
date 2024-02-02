@@ -3,6 +3,8 @@ import { formatFileSize, saveMedia } from "client-helper/dist"
 import { FC, useState, useEffect, ChangeEvent } from "react"
 import isUrl from "is-url"
 
+import { corsProxyUrl } from "../../settings"
+
 import styles from "./style.module.scss"
 
 type Extra = {
@@ -45,8 +47,12 @@ const HomePage: FC = () => {
         }
 
         try {
-            const videoInfo = await getVideoInfo({ videoUrl: videoUrl })
+            const videoInfo = await getVideoInfo({
+                videoUrl: videoUrl,
+                corsProxyUrl: corsProxyUrl
+            })
 
+            setVideoFormat(videoInfo.formats[0])
             return setVideoInfo(videoInfo)
         } catch(error) {
             return alert("Não foi possível obter os dados desse vídeo, escolha outra URL ou tente novamente mais tarde!")
@@ -74,7 +80,8 @@ const HomePage: FC = () => {
             fileType: videoFormat.fileExtension,
             quality: videoFormat.quality,
             token: videoInfo.token,
-            tokenExpiresAt: videoInfo.tokenExpiresAt
+            tokenExpiresAt: videoInfo.tokenExpiresAt,
+            corsProxyUrl: corsProxyUrl
         })
     
         const conversionJobResult = await createConvertJob({
@@ -84,40 +91,66 @@ const HomePage: FC = () => {
             fileType: videoFormat.fileExtension,
             quality: videoFormat.quality,
             token: videoInfo.token,
-            tokenExpiresAt: videoInfo.tokenExpiresAt
+            tokenExpiresAt: videoInfo.tokenExpiresAt,
+            corsProxyUrl: corsProxyUrl
         })
 
         if (!conversionJobResult.fileUrl) {
             return alert("Não foi possível obter o a URL do arquivo!")
         }
 
-        const fileName = videoInfo.fileName.replace("X2Download.app-", "x2Marcuth - ") + "." + videoFormat.fileExtension
-
-        await saveMedia({ source: conversionJobResult.fileUrl, fileName: fileName })
+        window.open(conversionJobResult.fileUrl)
     }
 
     return (
-        <div className={styles["home-page"]}>
-            <input type="url" onChange={handleChangeUrl}/>
-            <button onClick={handleClickSearch}>Pesquisar</button>
-            {videoInfo && (
-                <div>
-                    <ul>
-                        <li><b>Título: </b>{videoInfo.title}</li>
-                        <li><b>Id: </b>{videoInfo.id}</li>
-                    </ul>
-                    <select onChange={handleChangeVideoFormat}>
-                        {videoInfo.formats.map(format => {
-                            const text = `[${format.fileExtension}] ${format.quality} ${formatFileSize({ fileSizeInBytes: format.size })}`
-
-                            return (
-                                <option value={format.qualityKey}>{text}</option>
-                            )
-                        })}
-                    </select>
-                    <button onClick={handleClickDownloadVideo}>Baixar</button>
+        <div className={`container ${styles["home-page"]}`}>
+            <div className="row">
+                <div className="col-md-6 offset-md-3">
+                    <h1 className="mb-4 text-center mt-3 mb-5">X2Marcuth</h1>
+                    <div className="input-group mb-3">
+                        <input
+                            type="url"
+                            className="form-control"
+                            placeholder="Cole a URL do vídeo do YouTube aqui..."
+                            onChange={handleChangeUrl}
+                        />
+                        <button
+                            className="btn btn-primary"
+                            type="button"
+                            onClick={handleClickSearch}
+                        >
+                            <i className="bi bi-search"/>
+                        </button>
+                    </div>
+                    {videoInfo && (
+                        <div>
+                            <p><b>Título: </b>{videoInfo.title}</p>
+                            <div className="input-group mb-3">
+                                <div className="flex-grow-1 me-2">
+                                    <select
+                                        className="form-select"
+                                        onChange={handleChangeVideoFormat}
+                                    >
+                                        {videoInfo.formats.map(format => (
+                                            <option key={format.qualityKey} value={format.qualityKey}>
+                                                {`[${format.fileExtension}] ${format.quality} ${formatFileSize({ fileSizeInBytes: format.size })}`}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <button
+                                        className="btn btn-success"
+                                        onClick={handleClickDownloadVideo}
+                                    >
+                                        <i className="bi bi-download"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            )}
+            </div>
         </div>
     )
 }
