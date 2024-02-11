@@ -6,7 +6,6 @@ import isUrl from "is-url"
 import { corsProxyUrl } from "../../settings"
 
 import styles from "./style.module.scss"
-import getYouTubeThumbnail from "../../utils/get-youtube-thumbnail"
 
 type Extra = {
     a: string
