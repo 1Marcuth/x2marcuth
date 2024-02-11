@@ -1,11 +1,12 @@
 import { getVideoInfo, convertVideo, createConvertJob } from "x2download/dist"
-import { formatFileSize, saveMedia } from "client-helper/dist"
-import { FC, useState, useEffect, ChangeEvent } from "react"
+import { formatFileSize } from "client-helper/dist"
+import { FC, useState, ChangeEvent } from "react"
 import isUrl from "is-url"
 
 import { corsProxyUrl } from "../../settings"
 
 import styles from "./style.module.scss"
+import getYouTubeThumbnail from "../../utils/get-youtube-thumbnail"
 
 type Extra = {
     a: string
