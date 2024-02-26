@@ -1,12 +1,15 @@
-import { FC } from "react"
+import { FC, HTMLAttributes } from "react"
 
-type Props = {
+type Props = HTMLAttributes<HTMLDivElement> & {
     children: any
 }
 
-const Container: FC<Props> = ({ children }) => {
+const Container: FC<Props> = ({ children, ...props }) => {
+    const { className, ...remainingProps } = props
+    const containerClassName = `flex justify-center w-full min-h-screen ${className}`
+
     return (
-        <div className="flex justify-center w-full min-h-screen">
+        <div className={containerClassName} {...remainingProps}>
             <div className="w-full max-w-[1000px]">{children}</div>
         </div>
     )

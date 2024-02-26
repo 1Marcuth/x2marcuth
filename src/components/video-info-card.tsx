@@ -1,5 +1,5 @@
 import { formatFileSize } from "client-helper/dist"
-import { FC, useEffect, useState } from "react"
+import { FC, useState } from "react"
 
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,AlertDialogTrigger } from "./ui/alert-dialog"
 import { Select, SelectGroup, SelectTrigger, SelectValue, SelectContent, SelectLabel, SelectItem } from "./ui/select"
@@ -27,7 +27,11 @@ const VideoInfoCard: FC<Props> = ({ data, onDownloadButtonClick }) => {
             String(format.size) === fileSize
         ))
 
-        setCurrentFormat(newFormat!)
+        if (!newFormat) {
+            return alert("Não foi possível encontrar esse formato, por favor, escolha outro!")
+        }
+
+        setCurrentFormat(newFormat)
     }
 
     const handleDownloadButtonClick = (): void => {
@@ -57,12 +61,11 @@ const VideoInfoCard: FC<Props> = ({ data, onDownloadButtonClick }) => {
                                     <VideoInfoThumbSkeleton/>
                                 )}
                             </div>
-                            <div className="flex flex-col">
+                            <div className="flex flex-col max-w-full">
                                 <h3 className="mb-3 text-sm">{data.title}</h3>
                                 {data.description ? (
-                                    <p className="text-xs text-slate-400">{(() => {
+                                    <p className="text-xs text-slate-400 flex text-wrap overflow-hidden">{(() => {
                                         const displayDescription = data.description.length > 300 ? data.description.slice(0, 300) + "..." : data.description
-
                                         return displayDescription
                                     })()}</p>
                                 ) : (
@@ -70,7 +73,7 @@ const VideoInfoCard: FC<Props> = ({ data, onDownloadButtonClick }) => {
                                 )}
                                 <div className="mt-10 flex gap-1">
                                     <Select onValueChange={handleChangeFormat}>
-                                        <SelectTrigger className="max-w-none ">
+                                        <SelectTrigger className="max-w-full">
                                             <SelectValue placeholder="Selecione o formato"/>
                                         </SelectTrigger>
                                         <SelectContent className="dark">
@@ -84,7 +87,14 @@ const VideoInfoCard: FC<Props> = ({ data, onDownloadButtonClick }) => {
                                                             key={value}
                                                             value={value}
                                                         >
-                                                            {`[${format.fileExtension}] ${format.quality} ${formatFileSize({ fileSizeInBytes: format.size })}`}
+                                                            <span className="w-full flex justify-around gap-1 md:gap-2">
+                                                                <i className="bi bi-file-earmark text-slate-500"/>
+                                                                <span className="md:w-[60px] w-[40px] max-w-full">{format.fileExtension}</span>
+                                                                <i className="bi bi-stars text-slate-500"/> 
+                                                                <span className="md:w-[60px] w-[40px] max-w-full">{format.quality}</span> 
+                                                                <i className="bi bi-file-arrow-down text-slate-500"/>
+                                                                <span className="md:w-[80px] w-[65px] max-w-full">{formatFileSize({ fileSizeInBytes: format.size })}</span>
+                                                            </span>
                                                         </SelectItem>
                                                     )
                                                 })}

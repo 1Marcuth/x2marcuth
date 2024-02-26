@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import X2download from "x2download"
 
 import getYouTubeVideoMetadata, { YouTubeVideoMeatadata } from "../utils/get-youtube-video-metadata"
@@ -6,14 +6,15 @@ import { Format, ParsedVideoInfo } from "x2download/dist/core/get-video-info"
 import validateYouTubeVideoUrl from "../utils/validate-youtube-video-url"
 import VideoInfoCard from "../components/video-info-card"
 import InputUrlCard from "../components/input-url-card"
+import ReasonsCard from "../components/reasons-card"
 import AppHeader from "../components/app-header"
 import Container from "../components/container"
 import { corsProxyUrl } from "../settings"
-import ReasonsCard from "../components/reasons-card"
 
 const HomePage: FC = () => {
     const [ videoInfoWithMetadada, setVideoInfoWithMetadata ] = useState<(ParsedVideoInfo & YouTubeVideoMeatadata) | null>()
     const [ videoInfoCard, setVideoInfoCard ] = useState<JSX.Element>()
+    const x2downloadRef = useRef(new X2download({ corsProxyUrl: corsProxyUrl }))
     const [ videoInfo, setVideoInfo ] = useState<ParsedVideoInfo>()
     const [ url, setUrl ] = useState<string>()
 
@@ -24,9 +25,13 @@ const HomePage: FC = () => {
             return alert("Não foi possível encontrar os dados do vídeo!")
         }
 
-        const x2download = new X2download({ corsProxyUrl: corsProxyUrl })
-        const fileUrl = await x2download.getFileUrl({ info: videoInfo, format })
-        window.open(fileUrl)
+        try {
+            const fileUrl = await x2downloadRef.current.getFileUrl({ format })
+            window.open(fileUrl)
+        } catch(error) {
+            console.error(error)
+            alert("Não foi possível obter a URL de download desse arquivo! Por favor, tente outro formato ou entre em contanto com @marcuth.dev!")
+        }
     }
 
     const handleButtonSendClick = async (): Promise<void> => {
@@ -43,8 +48,7 @@ const HomePage: FC = () => {
             />
         )
 
-        const x2download = new X2download({ corsProxyUrl: corsProxyUrl })
-        const info = await x2download.getInfo(url)
+        const info = await x2downloadRef.current.getInfo(url)
         const metadata = await getYouTubeVideoMetadata(url)
         
         setVideoInfo(info)
@@ -66,7 +70,7 @@ const HomePage: FC = () => {
     return (
         <div>
             <AppHeader/>
-            <Container>
+            <Container className="p-2 md:p-0">
                 <div className="my-10"/>
                 <InputUrlCard
                     url={url}
