@@ -5,7 +5,7 @@ import { Skeleton } from "./ui/skeleton"
 const VideoInfoThumbSkeleton: FC = () => {
     return (
         <div>
-            <Skeleton className="h-[200px] w-[355px]"/>
+            <Skeleton className="h-[200px] md:w-[355px] w-[80vw]"/>
         </div>
     )
 }
