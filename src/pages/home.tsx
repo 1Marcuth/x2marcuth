@@ -4,6 +4,7 @@ import X2download from "x2download"
 import getYouTubeVideoMetadata, { YouTubeVideoMeatadata } from "../utils/get-youtube-video-metadata"
 import { Format, ParsedVideoInfo } from "x2download/dist/core/get-video-info"
 import validateYouTubeVideoUrl from "../utils/validate-youtube-video-url"
+import UseYourOwnProxyCard from "../components/use-your-own-proxy-card"
 import VideoInfoCard from "../components/video-info-card"
 import InputUrlCard from "../components/input-url-card"
 import ReasonsCard from "../components/reasons-card"
@@ -82,6 +83,7 @@ const HomePage: FC = () => {
                 {videoInfoCard}
                 {videoInfoCard && <div className="my-5"/>}
                 <ReasonsCard/>
+                <UseYourOwnProxyCard/>
             </Container>
         </div>
     )

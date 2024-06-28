@@ -37,13 +37,14 @@ const InputUrlCard: FC<Props> = ({
                 <div className="flex justify-start text-xs my-2 mx-[8%]">
                     <span className="flex items-center gap-1">
                         <i className="bi bi-link-45deg text-slate-600"/>
-                        <span  className="text-slate-500">Cole ou digite sua URL</span>
+                        <label className="text-slate-500" htmlFor="url">Cole ou digite sua URL</label>
                     </span>
                 </div>
                 <fieldset className="flex justify-center">
                     <Input
                         className="min-w-[250px] w-[80%] rounded-r-none"
                         placeholder="Sua URL aqui..."
+                        name="url"
                         value={url ?? ""}
                         onChange={handleInputValueChange}
                     />
