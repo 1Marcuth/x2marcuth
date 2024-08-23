@@ -2,8 +2,8 @@ import { FC } from "react"
 import isUrl from "is-url"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card"
-import { Input } from "./ui/input"
 import { Button } from "./ui/button"
+import { Input } from "./ui/input"
 
 type Props = {
     url: string | undefined

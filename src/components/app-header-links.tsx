@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom"
 import { FC } from "react"
+import { Button } from "./ui/button"
+import SettingDialog from "./settings-dialog"
 
 const linkItems = [
     {
@@ -12,7 +14,7 @@ const linkItems = [
 
 const AppHeaderLinks: FC = () => {
     return (
-        <ul className="flex">
+        <ul className="flex gap-2">
             {linkItems.map(linkItem => {
                 return (
                     <li key={linkItem.name}>
@@ -27,6 +29,13 @@ const AppHeaderLinks: FC = () => {
                     </li>
                 )
             })}
+            <li>
+                <SettingDialog>
+                    <Button className="dark text-white" variant="outline">
+                        <i className="bi bi-gear"/>
+                    </Button>
+                </SettingDialog>
+            </li>
         </ul>
     )
 }

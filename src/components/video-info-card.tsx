@@ -8,8 +8,8 @@ import VideoInfoDescriptionSkeleton from "./video-info-description-skeleton"
 import { YouTubeVideoMeatadata } from "../utils/get-youtube-video-metadata"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import VideoInfoThumbSkeleton from "./video-info-thumb-skeleton"
-import { Button } from "./ui/button"
 import VideoInfoTitleSkeleton from "./video-info-title-skeleton"
+import { Button } from "./ui/button"
 
 type Props = {
     data?: (ParsedVideoInfo & YouTubeVideoMeatadata) | null

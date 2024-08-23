@@ -13,8 +13,8 @@ import { corsProxyUrl } from "../settings"
 
 const HomePage: FC = () => {
     const [ videoInfoWithMetadada, setVideoInfoWithMetadata ] = useState<(ParsedVideoInfo & YouTubeVideoMeatadata) | null>()
-    const [ videoInfoCard, setVideoInfoCard ] = useState<JSX.Element>()
     const x2downloadRef = useRef(new X2download({ corsProxyUrl: corsProxyUrl }))
+    const [ videoInfoCard, setVideoInfoCard ] = useState<JSX.Element>()
     const [ videoInfo, setVideoInfo ] = useState<ParsedVideoInfo>()
     const [ url, setUrl ] = useState<string>()
 
@@ -52,7 +52,11 @@ const HomePage: FC = () => {
         const metadata = await getYouTubeVideoMetadata(url)
         
         setVideoInfo(info)
-        setVideoInfoWithMetadata({ ...info, ...metadata })
+        setVideoInfoWithMetadata({
+            ...info,
+            ...(metadata.description && { description: metadata.description }),
+            ...(metadata.thumbnailUrl && { thumbnailUrl: metadata.thumbnailUrl })
+        })
     }
 
     useEffect(() => {

@@ -2,9 +2,11 @@ module.exports = {
     webpack: {
         configure: (config) => {
             const fileLoaderRule = getFileLoaderRule(config.module.rules)
-            if(!fileLoaderRule) {
+            
+            if (!fileLoaderRule) {
                 throw new Error("File loader not found")
             }
+
             fileLoaderRule.exclude.push(/\.cjs$/)
             
             return config
