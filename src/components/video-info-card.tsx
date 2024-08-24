@@ -131,8 +131,10 @@ const VideoInfoCard: FC<Props> = ({ data, onDownloadButtonClick }) => {
                         </>
                     ) : (
                         <div className="flex justify-center items-center gap-4 md:justify-center md:items-start md:flex-row flex-col">
-                            <VideoInfoThumbSkeleton/>
-                            <div>
+                            <div className="flex justify-center items-center w-full max-w-none md:max-w-[355px]">
+                                <VideoInfoThumbSkeleton/>
+                            </div>
+                            <div className="flex flex-col max-w-full">
                                 <VideoInfoTitleSkeleton/>
                                 <VideoInfoDescriptionSkeleton/>
                             </div>

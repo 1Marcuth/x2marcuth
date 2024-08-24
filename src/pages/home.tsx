@@ -10,24 +10,64 @@ import ReasonsCard from "../components/reasons-card"
 import AppHeader from "../components/app-header"
 import Container from "../components/container"
 import { corsProxyUrl } from "../settings"
+import { useLocalStorage } from "@uidotdev/usehooks"
+import isUrl from "is-url"
+import { saveMedia } from "client-helper/dist"
 
 const HomePage: FC = () => {
     const [ videoInfoWithMetadada, setVideoInfoWithMetadata ] = useState<(ParsedVideoInfo & YouTubeVideoMeatadata) | null>()
-    const x2downloadRef = useRef(new X2download({ corsProxyUrl: corsProxyUrl }))
+    const [ removeWebsitePrefix, setRemoveWebsitePrefix ] = useLocalStorage<boolean>("removeWebsitePrefix", false)
+    const [ useCustomProxy, setUseCustomProxy ] = useLocalStorage<boolean>("useCustomProxy", false)
+    const [ customProxyUrl, _ ] = useLocalStorage<string>("customProxyUrl")
+    const [ proxyUrl, setProxyUrl ] = useState<string>(corsProxyUrl)
+    const x2downloadRef = useRef(new X2download({ corsProxyUrl: proxyUrl }))
     const [ videoInfoCard, setVideoInfoCard ] = useState<JSX.Element>()
     const [ videoInfo, setVideoInfo ] = useState<ParsedVideoInfo>()
     const [ url, setUrl ] = useState<string>()
 
     const isValidUrl = (url ? true : false) && validateYouTubeVideoUrl(url!)
 
-    const handleDownloadButtonClick = async (format: Format): Promise<void> => {
+    const handleDownloadButtonClick = async (format: Format): Promise<any> => {
         if (!videoInfo || !videoInfoWithMetadada) {
             return alert("Não foi possível encontrar os dados do vídeo!")
         }
 
         try {
             const fileUrl = await x2downloadRef.current.getFileUrl({ format })
-            window.open(fileUrl)
+
+            console.log(removeWebsitePrefix)
+
+            if (!removeWebsitePrefix) {
+                return window.open(fileUrl)
+            }
+
+            const websitePrefix = "X2Download.app-"
+            const fileName = `${videoInfo.fileName}.${format.fileExtension}`.replace(websitePrefix, "").trim()
+
+            try {
+                const response = await fetch(`${proxyUrl}${fileUrl}`)
+                const blob = await response.blob()
+                const url = window.URL.createObjectURL(blob)
+                const link = document.createElement("a")
+
+                link.style.display = "none"
+                link.href = url
+                link.download = fileName
+                document.body.appendChild(link)
+                link.click()
+                window.URL.revokeObjectURL(url)
+            } catch(error) {
+
+            }
+            
+            try {
+                // await saveMedia({
+                //     source: `${proxyUrl}${fileUrl}`,
+                //     fileName: fileName
+                // })
+            } catch(error) {
+                console.error(error)
+            }
         } catch(error) {
             console.error(error)
             alert("Não foi possível obter a URL de download desse arquivo! Por favor, tente outro formato ou entre em contanto com @marcuth.dev!")
@@ -49,7 +89,7 @@ const HomePage: FC = () => {
         )
 
         const info = await x2downloadRef.current.getInfo(url)
-        const metadata = await getYouTubeVideoMetadata(url)
+        const metadata = await getYouTubeVideoMetadata(url, proxyUrl)
         
         setVideoInfo(info)
         setVideoInfoWithMetadata({
@@ -70,6 +110,18 @@ const HomePage: FC = () => {
         )
         
     }, [videoInfoWithMetadada])
+
+    useEffect(() => {
+        if (customProxyUrl && isUrl(customProxyUrl) && useCustomProxy) {
+            setProxyUrl(customProxyUrl)
+        } else {
+            setProxyUrl(corsProxyUrl)
+        }
+    }, [customProxyUrl, useCustomProxy])
+
+    useEffect(() => {
+        console.log("Proxy URL: " + proxyUrl)
+    }, [proxyUrl])
 
     return (
         <div>

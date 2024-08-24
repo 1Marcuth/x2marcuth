@@ -11,8 +11,9 @@ type Props = {
 }
 
 const SettingDialog: FC<Props> = ({ children }) => {
-    const [ useCustomProxy, setUseCustomProxy ] = useState<boolean>(false)
-    const [ customProxy, setCustomProxy ] = useLocalStorage<string>("customProxy", "")
+    const [ removeWebsitePrefix, setRemoveWebsitePrefix ] = useLocalStorage<boolean>("removeWebsitePrefix", false)
+    const [ customProxyUrl, setCustomProxyUrl ] = useLocalStorage<string>("customProxyUrl")
+    const [ useCustomProxy, setUseCustomProxy ] = useState<boolean>(customProxyUrl ? true : false)
 
     const handleUseCustomProxyCheckboxClick = () => {
         setUseCustomProxy(!useCustomProxy)
@@ -20,24 +21,33 @@ const SettingDialog: FC<Props> = ({ children }) => {
 
     const handleCustomProxyInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value as string
-        setCustomProxy(value)
+        setCustomProxyUrl(value)
+    }
+
+    const handleRemoveWebsitePrefixCheckboxClick = () => {
+        setRemoveWebsitePrefix(!removeWebsitePrefix)
     }
 
     return (
         <Dialog>
             <DialogTrigger>{children}</DialogTrigger>
-            <DialogContent className="dark">
+            <DialogContent className="dark max-sm:w-[90%]">
                 <DialogHeader>
                     <DialogTitle className="text-white flex gap-2">
                         <i className="bi bi-gear" />
                         <span>Configurações</span>
                     </DialogTitle>
                     <div className="h-2"></div>
-                    <DialogDescription>Configure a e personalize alguns atributos do downloader.</DialogDescription>
+                    <DialogDescription className="max-sm:text-left">Configure a e personalize alguns atributos do downloader.</DialogDescription>
                 </DialogHeader>
                 <ul className="text-white text-xs">
                     <li className="flex gap-2 items-center py-2 select-none">
-                        <Checkbox name="remove-website-prefix" id="remove-website-prefix"/>
+                        <Checkbox
+                            onClick={handleRemoveWebsitePrefixCheckboxClick}
+                            checked={removeWebsitePrefix}
+                            name="remove-website-prefix"
+                            id="remove-website-prefix"         
+                        />
                         <label htmlFor="remove-website-prefix" title="Isso custará mais chamadas na proxy, use com moderação!">Remover prefixo do site <span className="text-slate-400">(https://x2download.app/)</span></label>
                     </li>
                     <li className="flex gap-2 items-center py-2 select-none">
@@ -56,7 +66,7 @@ const SettingDialog: FC<Props> = ({ children }) => {
                                 onChange={handleCustomProxyInputChange}
                                 className="text-xs my-2"
                                 disabled={!useCustomProxy}
-                                value={customProxy}
+                                value={customProxyUrl}
                                 type="text"
                             />
                         </li>

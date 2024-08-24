@@ -1,14 +1,12 @@
 import * as cheerio from "cheerio"
 import axios from "axios"
 
-import { corsProxyUrl } from "../settings"
-
 export type YouTubeVideoMeatadata = {
     thumbnailUrl?: string | null
     description?: string | null
 }
 
-async function getYouTubeVideoMetadata(videoUrl: string): Promise<YouTubeVideoMeatadata> {
+async function getYouTubeVideoMetadata(videoUrl: string, corsProxyUrl: string): Promise<YouTubeVideoMeatadata> {
     try {
         const url = `${corsProxyUrl}${videoUrl}`
         const response = await axios.get(url)
