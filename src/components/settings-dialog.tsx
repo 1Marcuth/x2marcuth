@@ -1,9 +1,8 @@
-import { ChangeEvent, FC, ReactNode, useState } from "react"
-import { useLocalStorage } from "@uidotdev/usehooks"
+import { ChangeEvent, FC, ReactNode, useContext } from "react"
 
-import { Dialog, DialogHeader, DialogContent, DialogDescription, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "./ui/dialog"
+import { Dialog, DialogHeader, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "./ui/dialog"
+import { MainContext } from "../contexts/main.context"
 import { Checkbox } from "./ui/checkbox"
-import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 
 type Props = {
@@ -11,27 +10,25 @@ type Props = {
 }
 
 const SettingDialog: FC<Props> = ({ children }) => {
-    const [ removeWebsitePrefix, setRemoveWebsitePrefix ] = useLocalStorage<boolean>("removeWebsitePrefix", false)
-    const [ customProxyUrl, setCustomProxyUrl ] = useLocalStorage<string>("customProxyUrl")
-    const [ useCustomProxy, setUseCustomProxy ] = useState<boolean>(customProxyUrl ? true : false)
+    const mainContext = useContext(MainContext)
 
     const handleUseCustomProxyCheckboxClick = () => {
-        setUseCustomProxy(!useCustomProxy)
+        mainContext.setUseCustomProxy(!mainContext.useCustomProxy)
     }
 
     const handleCustomProxyInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value as string
-        setCustomProxyUrl(value)
+        mainContext.setCustomProxyUrl(value)
     }
 
     const handleRemoveWebsitePrefixCheckboxClick = () => {
-        setRemoveWebsitePrefix(!removeWebsitePrefix)
+        mainContext.setRemoveWebsitePrefix(!mainContext.removeWebsitePrefix)
     }
 
     return (
         <Dialog>
             <DialogTrigger>{children}</DialogTrigger>
-            <DialogContent className="dark max-sm:w-[90%]">
+            <DialogContent className="dark text-white max-sm:w-[90%]">
                 <DialogHeader>
                     <DialogTitle className="text-white flex gap-2">
                         <i className="bi bi-gear" />
@@ -44,7 +41,7 @@ const SettingDialog: FC<Props> = ({ children }) => {
                     <li className="flex gap-2 items-center py-2 select-none">
                         <Checkbox
                             onClick={handleRemoveWebsitePrefixCheckboxClick}
-                            checked={removeWebsitePrefix}
+                            checked={mainContext.removeWebsitePrefix}
                             name="remove-website-prefix"
                             id="remove-website-prefix"         
                         />
@@ -54,29 +51,24 @@ const SettingDialog: FC<Props> = ({ children }) => {
                         <Checkbox
                             name="use-custom-proxy"
                             id="use-custom-proxy"
-                            checked={useCustomProxy}
+                            checked={mainContext.useCustomProxy}
                             onClick={handleUseCustomProxyCheckboxClick}
                         />
                         <label htmlFor="use-custom-proxy">Utilizar Proxy de CORS personalizada</label>
                     </li>
-                    {useCustomProxy && (
+                    {mainContext.useCustomProxy && (
                         <li>
                             <Input
                                 placeholder="Endereço do proxy (ex: https://proxy.cloudflare.workers.dev/)"
                                 onChange={handleCustomProxyInputChange}
                                 className="text-xs my-2"
-                                disabled={!useCustomProxy}
-                                value={customProxyUrl}
+                                disabled={!mainContext.useCustomProxy}
+                                value={mainContext.customProxyUrl}
                                 type="text"
                             />
                         </li>
                     )}
                 </ul>
-                <DialogFooter className="sm:justify-start">
-                    <DialogClose asChild>
-                        <Button type="button" variant="secondary">Fechar</Button>
-                    </DialogClose>
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     )

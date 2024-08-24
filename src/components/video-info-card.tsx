@@ -1,7 +1,6 @@
 import { formatFileSize } from "client-helper/dist"
 import { FC, useState } from "react"
 
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,AlertDialogTrigger } from "./ui/alert-dialog"
 import { Select, SelectGroup, SelectTrigger, SelectValue, SelectContent, SelectLabel, SelectItem } from "./ui/select"
 import { Format, ParsedVideoInfo } from "x2download/dist/core/get-video-info"
 import VideoInfoDescriptionSkeleton from "./video-info-description-skeleton"
@@ -10,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import VideoInfoThumbSkeleton from "./video-info-thumb-skeleton"
 import VideoInfoTitleSkeleton from "./video-info-title-skeleton"
 import { Button } from "./ui/button"
+import DownloadVideoAlertDialog from "./download-video-alert-dialog"
 
 type Props = {
     data?: (ParsedVideoInfo & YouTubeVideoMeatadata) | null
@@ -101,31 +101,15 @@ const VideoInfoCard: FC<Props> = ({ data, onDownloadButtonClick }) => {
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger>
-                                            <Button
-                                                variant="outline"
-                                                onClick={handleDownloadButtonClick}
-                                                disabled={currentFormat ? false : true}
-                                            >
-                                                <i className="bi bi-download"/>
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent className="dark text-white">
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>
-                                                    <span className="flex items-center gap-1">
-                                                        <i className="bi bi-hourglass-split text-slate-400"/>
-                                                    <span>Ei! Espere um pouquinho...</span> 
-                                                    </span>
-                                                </AlertDialogTitle>
-                                                <AlertDialogDescription className="text-sm">Seu download já vai começar, iremos converter o arquivo e abri-lo em uma nova janela para que o navegador baixe ele automaticamente. Não se preocupe, não é um pop-up de propaganda ou algo malicioso ;)</AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Ok</AlertDialogCancel>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
+                                    <DownloadVideoAlertDialog>
+                                        <Button
+                                            variant="outline"
+                                            onClick={handleDownloadButtonClick}
+                                            disabled={currentFormat ? false : true}
+                                        >
+                                            <i className="bi bi-download"/>
+                                        </Button>
+                                    </DownloadVideoAlertDialog>
                                 </div>
                             </div>
                         </>
